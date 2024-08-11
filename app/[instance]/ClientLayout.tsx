@@ -7,20 +7,21 @@ import Divider from "@mui/joy/Divider";
 import Stack from "@mui/joy/Stack";
 import React from "react";
 
-const Layout = ({
-  children,
-}: {
-  children: React.ReactNode,
-}) => {
+interface ClientLayoutProps {
+  instances: Instance[];
+  selectedInstance: Instance;
+  children: React.ReactNode;
+}
+
+const ClientLayout: React.FC<ClientLayoutProps> = ({ instances, selectedInstance, children }) => {
   const [navOpen, setNavOpen] = React.useState(false);
 
-  const instanceName = "marshdapro's Instance";
 
   return (
     <Stack direction="row" height="100%" overflow="hidden">
-      <Sidebar navOpen={navOpen} setNavOpen={setNavOpen} instanceName={instanceName}/>
+      <Sidebar navOpen={navOpen} setNavOpen={setNavOpen} selectedInstance={selectedInstance}/>
       <Stack direction="column" width={{ xs: "100vw", md: "100%" }} onClick={() => setNavOpen(false)}>
-        <PageHeader instanceName={instanceName} setNavOpen={setNavOpen}/>
+        <PageHeader selectedInstance={selectedInstance} setNavOpen={setNavOpen}/>
         <Divider/>
         <Box
           component="main"
@@ -34,6 +35,6 @@ const Layout = ({
       </Stack>
     </Stack>
   );
-};
+}
 
-export default Layout;
+export default ClientLayout;

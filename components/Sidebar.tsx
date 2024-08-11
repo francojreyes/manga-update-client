@@ -47,10 +47,10 @@ const navItems = [
 interface SidebarProps {
   navOpen: boolean,
   setNavOpen: React.Dispatch<React.SetStateAction<boolean>>,
-  instanceName: string
+  selectedInstance: Instance
 }
 
-const Sidebar: React.FC<SidebarProps> = ({ navOpen, setNavOpen, instanceName }) => {
+const Sidebar: React.FC<SidebarProps> = ({ navOpen, setNavOpen, selectedInstance }) => {
   const pathname = usePathname();
   const baseUrl = pathname.substring(0, pathname.lastIndexOf("/"));
 
@@ -104,7 +104,7 @@ const Sidebar: React.FC<SidebarProps> = ({ navOpen, setNavOpen, instanceName }) 
               overflow="hidden"
               textOverflow="ellipsis"
             >
-              {instanceName}
+              {selectedInstance.name}
             </Typography>
           </Stack>
           <Divider/>

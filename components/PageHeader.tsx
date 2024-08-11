@@ -9,11 +9,11 @@ import React from "react";
 export const headerHeight = 55;
 
 interface PageHeaderProps {
-  instanceName: string,
+  selectedInstance: Instance,
   setNavOpen: React.Dispatch<React.SetStateAction<boolean>>,
 }
 
-const PageHeader: React.FC<PageHeaderProps> = ({ instanceName, setNavOpen }) => {
+const PageHeader: React.FC<PageHeaderProps> = ({ selectedInstance, setNavOpen }) => {
   const pageName = usePageName();
 
   return <Sheet
@@ -40,7 +40,7 @@ const PageHeader: React.FC<PageHeaderProps> = ({ instanceName, setNavOpen }) => 
     </IconButton>
     <Stack direction="column" spacing={-0.5} justifyContent="center">
       <Typography level="title-md" fontWeight="bold">{pageName}</Typography>
-      <Typography level="body-xs" display={{ md: "none" }}>{instanceName}</Typography>
+      <Typography level="body-xs" display={{ md: "none" }}>{selectedInstance.name}</Typography>
     </Stack>
   </Sheet>;
 };
