@@ -1,0 +1,46 @@
+import React from 'react';
+import Sheet from '@mui/joy/Sheet';
+import Stack from '@mui/joy/Stack';
+import IconButton from '@mui/joy/IconButton';
+import MenuIcon from '@mui/icons-material/Menu';
+import Typography from '@mui/joy/Typography';
+
+export const headerHeight = 55;
+
+interface PageHeaderProps {
+  pageName: string,
+  instanceName: string,
+  setNavOpen: React.Dispatch<React.SetStateAction<boolean>>,
+}
+
+const PageHeader: React.FC<PageHeaderProps> = ({ pageName, instanceName, setNavOpen }) => {
+  return <Sheet
+    component={Stack}
+    width={{ xs: '100vw', md: '100%' }}
+    height={headerHeight}
+    direction="row"
+    alignItems="center"
+    spacing={1}
+    px={1}
+    boxShadow="xs"
+  >
+    <IconButton
+      size="md"
+      sx={{
+        display: { md: 'none' }
+      }}
+      onClick={(e) => {
+        e.stopPropagation();
+        setNavOpen((prevOpen) => !prevOpen)
+      }}
+    >
+      <MenuIcon/>
+    </IconButton>
+    <Stack direction="column" spacing={-0.5} justifyContent="center">
+      <Typography level="title-md" fontWeight="bold">{pageName}</Typography>
+      <Typography level="body-xs" display={{ md: 'none' }}>{instanceName}</Typography>
+    </Stack>
+  </Sheet>;
+}
+
+export default PageHeader;
