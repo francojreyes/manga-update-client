@@ -1,22 +1,24 @@
-import React from 'react';
-import Sheet from '@mui/joy/Sheet';
-import Stack from '@mui/joy/Stack';
-import IconButton from '@mui/joy/IconButton';
-import MenuIcon from '@mui/icons-material/Menu';
-import Typography from '@mui/joy/Typography';
+import usePageName from "@/hooks/usePageName";
+import MenuIcon from "@mui/icons-material/Menu";
+import IconButton from "@mui/joy/IconButton";
+import Sheet from "@mui/joy/Sheet";
+import Stack from "@mui/joy/Stack";
+import Typography from "@mui/joy/Typography";
+import React from "react";
 
 export const headerHeight = 55;
 
 interface PageHeaderProps {
-  pageName: string,
   instanceName: string,
   setNavOpen: React.Dispatch<React.SetStateAction<boolean>>,
 }
 
-const PageHeader: React.FC<PageHeaderProps> = ({ pageName, instanceName, setNavOpen }) => {
+const PageHeader: React.FC<PageHeaderProps> = ({ instanceName, setNavOpen }) => {
+  const pageName = usePageName();
+
   return <Sheet
     component={Stack}
-    width={{ xs: '100vw', md: '100%' }}
+    width={{ xs: "100vw", md: "100%" }}
     height={headerHeight}
     direction="row"
     alignItems="center"
@@ -27,20 +29,20 @@ const PageHeader: React.FC<PageHeaderProps> = ({ pageName, instanceName, setNavO
     <IconButton
       size="md"
       sx={{
-        display: { md: 'none' }
+        display: { md: "none" }
       }}
       onClick={(e) => {
         e.stopPropagation();
-        setNavOpen((prevOpen) => !prevOpen)
+        setNavOpen((prevOpen) => !prevOpen);
       }}
     >
       <MenuIcon/>
     </IconButton>
     <Stack direction="column" spacing={-0.5} justifyContent="center">
       <Typography level="title-md" fontWeight="bold">{pageName}</Typography>
-      <Typography level="body-xs" display={{ md: 'none' }}>{instanceName}</Typography>
+      <Typography level="body-xs" display={{ md: "none" }}>{instanceName}</Typography>
     </Stack>
   </Sheet>;
-}
+};
 
 export default PageHeader;
