@@ -15,7 +15,7 @@ const usePageName = () => {
     case "settings":
       return "Settings";
     default:
-      return "Unknown Page";
+      return "";
   }
 };
 

@@ -47,12 +47,12 @@ const navItems = [
 interface SidebarProps {
   navOpen: boolean,
   setNavOpen: React.Dispatch<React.SetStateAction<boolean>>,
+  instances: Instance[],
   selectedInstance: Instance
 }
 
-const Sidebar: React.FC<SidebarProps> = ({ navOpen, setNavOpen, selectedInstance }) => {
+const Sidebar: React.FC<SidebarProps> = ({ navOpen, setNavOpen, instances, selectedInstance }) => {
   const pathname = usePathname();
-  const baseUrl = pathname.substring(0, pathname.lastIndexOf("/"));
 
   return <>
     <Sheet
@@ -65,34 +65,14 @@ const Sidebar: React.FC<SidebarProps> = ({ navOpen, setNavOpen, selectedInstance
       }}
     >
       <Stack direction="row" flexGrow={1}>
-        <Stack
-          width={80} direction="column" alignItems="center" py={2} gap={1} sx={(theme) => ({
-          "& > div": {
-            boxShadow: "none",
-            transition: "0.1s all",
-            "--Card-padding": "0px",
-            "--Card-radius": "50%",
-            "&:hover": {
-              "--Card-radius": theme.radius.lg,
-            }
-          },
-        })}
-        >
-          <Card variant="outlined" sx={{ width: 50 }}>
-            <AspectRatio ratio="1" sx={{ width: 50 }}>
-              <Image
-                fill
-                src="https://images.unsplash.com/photo-1532614338840-ab30cf10ed36?auto=format&h=80"
-                alt="Yosemite National Park"
-              />
-            </AspectRatio>
-          </Card>
-          <Card
-            variant="soft"
-            sx={{ width: 50, height: 50, display: "flex", alignItems: "center", justifyContent: "center" }}
-          >
-            <Typography color="neutral" level="body-lg">I1</Typography>
-          </Card>
+        <Stack width={80} direction="column" alignItems="center" py={2} gap={1}>
+          {instances.map((instance) => (
+            <InstanceNavItem
+              key={instance.id}
+              instance={instance}
+              selected={instance.id === selectedInstance.id}
+            />
+          ))}
         </Stack>
         <Divider orientation="vertical"/>
         <Stack direction="column" width={navWidth - 80}>
@@ -132,7 +112,7 @@ const Sidebar: React.FC<SidebarProps> = ({ navOpen, setNavOpen, selectedInstance
                   key={href}
                   Icon={Icon}
                   title={title}
-                  href={baseUrl + href}
+                  href={`/${selectedInstance.idx}${href}`}
                   selected={pathname.endsWith(href)}
                   onClick={() => setNavOpen(false)}
                 />
@@ -147,6 +127,49 @@ const Sidebar: React.FC<SidebarProps> = ({ navOpen, setNavOpen, selectedInstance
     <Divider orientation="vertical"/>
   </>;
 };
+
+interface InstanceNavItemProps {
+  instance: Instance;
+  selected: boolean;
+}
+
+const InstanceNavItem: React.FC<InstanceNavItemProps> = ({ instance, selected }) => {
+  return (
+    <Card
+      component={Link}
+      href={`/${instance.idx}`}
+      variant={instance.imgSrc ? "outlined" : "soft"}
+      sx={{
+        width: 50,
+        height: 50,
+        textDecoration: "none",
+        display: "flex",
+        alignItems: "center",
+        justifyContent: "center",
+        boxShadow: "none",
+        transition: "0.1s all",
+        "--Card-padding": "0px",
+        "--Card-radius": "50%",
+        "&:hover": {
+          "--Card-radius": (theme) => theme.radius.lg,
+        }
+      }}
+    >
+      {instance.imgSrc
+        ? <AspectRatio ratio="1" sx={{ width: 50 }}>
+          <Image
+            fill
+            src={instance.imgSrc}
+            alt={`image for ${instance.name}`}
+          />
+        </AspectRatio>
+        : <Typography color="neutral" level="body-lg">
+          {instance.name.split(/\s+/).map((word) => word[0].toUpperCase()).join("")}
+        </Typography>
+      }
+    </Card>
+  )
+}
 
 interface PageNavItemProps {
   Icon: SvgIconComponent;

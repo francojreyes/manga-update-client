@@ -38,10 +38,12 @@ const PageHeader: React.FC<PageHeaderProps> = ({ selectedInstance, setNavOpen })
     >
       <MenuIcon/>
     </IconButton>
-    <Stack direction="column" spacing={-0.5} justifyContent="center">
-      <Typography level="title-md" fontWeight="bold">{pageName}</Typography>
-      <Typography level="body-xs" display={{ md: "none" }}>{selectedInstance.name}</Typography>
-    </Stack>
+    {pageName && (
+      <Stack direction="column" spacing={-0.5} justifyContent="center">
+        <Typography level="title-md" fontWeight="bold">{pageName}</Typography>
+        <Typography level="body-xs" display={{ md: "none" }}>{selectedInstance.name}</Typography>
+      </Stack>
+    )}
   </Sheet>;
 };
 
