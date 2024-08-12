@@ -1,8 +1,9 @@
+import CssBaseline from "@mui/joy/CssBaseline";
+import { CssVarsProvider } from "@mui/joy/styles";
 import type { Metadata } from "next";
 import "./globals.css";
-import React from 'react';
-import CssBaseline from '@mui/joy/CssBaseline';
-import { CssVarsProvider } from '@mui/joy/styles';
+import { SessionProvider } from "next-auth/react";
+import React from "react";
 
 export const metadata: Metadata = {
   title: "Create Next App",
@@ -16,12 +17,14 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
-      <body>
+    <body>
+    <SessionProvider>
       <CssVarsProvider defaultMode="dark">
-        <CssBaseline />
+        <CssBaseline/>
         {children}
       </CssVarsProvider>
-      </body>
+    </SessionProvider>
+    </body>
     </html>
   );
 }
