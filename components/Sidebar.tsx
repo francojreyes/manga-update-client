@@ -1,4 +1,6 @@
+import { useInstancesContext } from "@/app/instance/InstancesProvider";
 import { headerHeight } from "@/components/PageHeader";
+import useSelectedInstance from "@/hooks/useSelectedInstance";
 import { SvgIconComponent } from "@mui/icons-material";
 import AutoStoriesIcon from "@mui/icons-material/AutoStories";
 import PeopleAltIcon from "@mui/icons-material/PeopleAlt";
@@ -12,6 +14,7 @@ import ListItem from "@mui/joy/ListItem";
 import ListItemButton, { listItemButtonClasses } from "@mui/joy/ListItemButton";
 import ListItemContent from "@mui/joy/ListItemContent";
 import Sheet from "@mui/joy/Sheet";
+import Skeleton from "@mui/joy/Skeleton";
 import Stack from "@mui/joy/Stack";
 import Typography from "@mui/joy/Typography";
 import Image from "next/image";
@@ -47,12 +50,14 @@ const navItems = [
 interface SidebarProps {
   navOpen: boolean,
   setNavOpen: React.Dispatch<React.SetStateAction<boolean>>,
-  instances: Instance[],
-  selectedInstance: Instance
 }
 
-const Sidebar: React.FC<SidebarProps> = ({ navOpen, setNavOpen, instances, selectedInstance }) => {
+const Sidebar: React.FC<SidebarProps> = ({ navOpen, setNavOpen }) => {
+  const instances = useInstancesContext();
+  const selectedInstance = useSelectedInstance();
+
   const pathname = usePathname();
+  const currentPage = pathname.substring(pathname.lastIndexOf("/") + 1);
 
   return <>
     <Sheet
@@ -70,7 +75,8 @@ const Sidebar: React.FC<SidebarProps> = ({ navOpen, setNavOpen, instances, selec
             <InstanceNavItem
               key={instance.id}
               instance={instance}
-              selected={instance.id === selectedInstance.id}
+              selected={instance.id === selectedInstance?.id}
+              currentPage={currentPage}
             />
           ))}
         </Stack>
@@ -84,7 +90,9 @@ const Sidebar: React.FC<SidebarProps> = ({ navOpen, setNavOpen, instances, selec
               overflow="hidden"
               textOverflow="ellipsis"
             >
-              {selectedInstance.name}
+              <Skeleton variant="rectangular" width="100%" loading={!selectedInstance}>
+                {selectedInstance?.name ?? "Placeholder Instance"}
+              </Skeleton>
             </Typography>
           </Stack>
           <Divider/>
@@ -112,7 +120,7 @@ const Sidebar: React.FC<SidebarProps> = ({ navOpen, setNavOpen, instances, selec
                   key={href}
                   Icon={Icon}
                   title={title}
-                  href={`/${selectedInstance.idx}${href}`}
+                  href={`/instance/${selectedInstance?.idx ?? 0}${href}`}
                   selected={pathname.endsWith(href)}
                   onClick={() => setNavOpen(false)}
                 />
@@ -131,13 +139,14 @@ const Sidebar: React.FC<SidebarProps> = ({ navOpen, setNavOpen, instances, selec
 interface InstanceNavItemProps {
   instance: Instance;
   selected: boolean;
+  currentPage: string;
 }
 
-const InstanceNavItem: React.FC<InstanceNavItemProps> = ({ instance, selected }) => {
+const InstanceNavItem: React.FC<InstanceNavItemProps> = ({ instance, selected, currentPage }) => {
   return (
     <Card
       component={Link}
-      href={`/${instance.idx}`}
+      href={`/instance/${instance.idx}/${currentPage}`}
       variant={instance.imgSrc ? "outlined" : "soft"}
       sx={{
         width: 50,
@@ -183,7 +192,7 @@ const PageNavItem: React.FC<PageNavItemProps> = ({ Icon, title, href, selected, 
   return (
     <ListItem>
       <ListItemButton selected={selected} component={Link} href={href} onClick={onClick}>
-        <Icon/>
+        <Icon />
         <ListItemContent>
           <Typography level="title-sm">{title}</Typography>
         </ListItemContent>

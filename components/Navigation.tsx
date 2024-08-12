@@ -5,24 +5,20 @@ import Sidebar from "@/components/Sidebar";
 import Box from "@mui/joy/Box";
 import Divider from "@mui/joy/Divider";
 import Stack from "@mui/joy/Stack";
-import { usePathname } from "next/navigation";
 import React from "react";
 
 interface ClientLayoutProps {
-  instances: Instance[];
-  selectedInstance: Instance;
   children: React.ReactNode;
 }
 
-const ClientLayout: React.FC<ClientLayoutProps> = ({ instances, selectedInstance, children }) => {
-  const pathname = usePathname();
-  const [navOpen, setNavOpen] = React.useState(!!pathname.match(/\/\d+/));
+const Navigation: React.FC<ClientLayoutProps> = ({ children }) => {
+  const [navOpen, setNavOpen] = React.useState(false);
 
   return (
     <Stack direction="row" height="100%" overflow="hidden">
-      <Sidebar navOpen={navOpen} setNavOpen={setNavOpen} instances={instances} selectedInstance={selectedInstance}/>
+      <Sidebar navOpen={navOpen} setNavOpen={setNavOpen}/>
       <Stack direction="column" width={{ xs: "100vw", md: "100%" }} onClick={() => setNavOpen(false)}>
-        <PageHeader selectedInstance={selectedInstance} setNavOpen={setNavOpen}/>
+        <PageHeader setNavOpen={setNavOpen}/>
         <Divider/>
         <Box
           component="main"
@@ -36,6 +32,6 @@ const ClientLayout: React.FC<ClientLayoutProps> = ({ instances, selectedInstance
       </Stack>
     </Stack>
   );
-}
+};
 
-export default ClientLayout;
+export default Navigation;
