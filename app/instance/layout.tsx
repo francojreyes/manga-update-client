@@ -4,8 +4,8 @@ import React from "react";
 import InstancesProvider from "./InstancesProvider";
 
 const Layout = async ({
-                        children,
-                      }: {
+  children,
+}: {
   children: React.ReactNode,
 }) => {
   const instances = await db.getUserInstances();

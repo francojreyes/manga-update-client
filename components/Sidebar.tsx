@@ -57,7 +57,9 @@ const Sidebar: React.FC<SidebarProps> = ({ navOpen, setNavOpen }) => {
   const selectedInstance = useSelectedInstance();
 
   const pathname = usePathname();
-  const currentPage = pathname.substring(pathname.lastIndexOf("/") + 1);
+  const pathSegments = pathname.split("/");
+  const currentPage = pathSegments[pathSegments.length - 1];
+  const instanceIdx = +pathSegments[pathSegments.length - 2];
 
   return <>
     <Sheet
@@ -75,7 +77,7 @@ const Sidebar: React.FC<SidebarProps> = ({ navOpen, setNavOpen }) => {
             <InstanceNavItem
               key={instance.id}
               instance={instance}
-              selected={instance.id === selectedInstance?.id}
+              selected={instance.idx === instanceIdx}
               currentPage={currentPage}
             />
           ))}
@@ -147,8 +149,8 @@ const InstanceNavItem: React.FC<InstanceNavItemProps> = ({ instance, selected, c
     <Card
       component={Link}
       href={`/instance/${instance.idx}/${currentPage}`}
-      variant={instance.imgSrc ? "outlined" : "soft"}
-      sx={{
+      variant="soft"
+      sx={(theme) => ({
         width: 50,
         height: 50,
         textDecoration: "none",
@@ -158,11 +160,27 @@ const InstanceNavItem: React.FC<InstanceNavItemProps> = ({ instance, selected, c
         boxShadow: "none",
         transition: "0.1s all",
         "--Card-padding": "0px",
-        "--Card-radius": "50%",
+        "--Card-radius": selected ? theme.radius.lg : "50%",
+        "&::before": {
+          content: `""`,
+          display: "block",
+          width: 14,
+          height: selected ? 40 : 0,
+          background: theme.palette.text.primary,
+          position: "absolute",
+          left: -25,
+          top: 25,
+          transform: "translateY(-50%)",
+          borderRadius: theme.radius.xs,
+          transition: "0.1s all",
+        },
         "&:hover": {
-          "--Card-radius": (theme) => theme.radius.lg,
+          "--Card-radius": theme.radius.lg,
+          "&::before": {
+            height: selected ? 40 : 25,
+          },
         }
-      }}
+      })}
     >
       {instance.imgSrc
         ? <AspectRatio ratio="1" sx={{ width: 50 }}>
@@ -177,8 +195,8 @@ const InstanceNavItem: React.FC<InstanceNavItemProps> = ({ instance, selected, c
         </Typography>
       }
     </Card>
-  )
-}
+  );
+};
 
 interface PageNavItemProps {
   Icon: SvgIconComponent;
@@ -192,7 +210,7 @@ const PageNavItem: React.FC<PageNavItemProps> = ({ Icon, title, href, selected, 
   return (
     <ListItem>
       <ListItemButton selected={selected} component={Link} href={href} onClick={onClick}>
-        <Icon />
+        <Icon/>
         <ListItemContent>
           <Typography level="title-sm">{title}</Typography>
         </ListItemContent>
