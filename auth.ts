@@ -5,6 +5,7 @@ import Discord, { DiscordProfile } from "next-auth/providers/discord";
 declare module "next-auth" {
   interface Session {
     user: {
+      discordId: string;
       username: string;
     } & DefaultSession["user"];
   }
@@ -12,17 +13,20 @@ declare module "next-auth" {
 
 declare module "@auth/core/jwt" {
   interface JWT extends DefaultJWT {
-    id: string;
+    discordId: string;
     username: string;
   }
 }
 
 export const { handlers, signIn, signOut, auth } = NextAuth({
   providers: [Discord({
-    async profile({ id, email, username, global_name, avatar }: DiscordProfile) {
+    async profile({ id, email, username, discriminator, global_name, avatar }: DiscordProfile) {
       const fmt = avatar?.startsWith("a_") ? "gif" : "png";
-      const image = `https://cdn.discordapp.com/avatars/${id}/${avatar}.${fmt}`;
-      return { id, email, name: global_name, username, image };
+      const image = avatar
+        ? `https://cdn.discordapp.com/avatars/${id}/${avatar}.${fmt}`
+        : `https://cdn.discordapp.com/embed/avatars/${+discriminator % 5}.png`;
+
+      return { discordId: id, email, name: global_name, username, image };
     }
   })],
   callbacks: {
@@ -33,12 +37,12 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
       if (user) { // User is available during sign-in
         Object.assign(token, user);
       }
-      return token
+      return token;
     },
     session({ session, token }) {
-      session.user.id = token.id;
+      session.user.discordId = token.discordId;
       session.user.username = token.username;
-      return session
+      return session;
     },
   },
 });

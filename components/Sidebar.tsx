@@ -184,7 +184,7 @@ const InstanceNavItem: React.FC<InstanceNavItemProps> = ({ instance, selected, c
           "&:hover": {
             "--Card-radius": theme.radius.lg,
             "&::before": {
-              height: selected ? 40 : 25,
+              height: { xs: 40, md: selected ? 40 : 25 },
             },
           }
         })}
@@ -232,10 +232,10 @@ const UserProfile = () => {
   const userData = session.data?.user;
 
   return (
-    <Stack height={70} width="100%" p={2} direction="row" justifyContent="space-between" alignItems="center">
-      <Stack direction="row" alignItems="center" spacing={1}>
+    <Stack height={70} width={navWidth} p={2} direction="row" justifyContent="space-between" alignItems="center">
+      <Stack direction="row" alignItems="center" spacing={1} width={180} overflow="hidden">
         <Avatar src={userData?.image ?? ""}>
-          <Skeleton loading={!userData}/>
+          <Skeleton loading={!userData?.image}/>
         </Avatar>
         <Stack direction="column" spacing={userData ? -0.5 : 0}>
           <Typography fontWeight="bold" level="title-sm">

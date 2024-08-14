@@ -1,6 +1,6 @@
 
 interface Instance {
-  id: string;
+  id: number;
   idx: number;
   name: string;
   imgSrc?: string;

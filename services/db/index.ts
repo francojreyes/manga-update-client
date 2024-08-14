@@ -1,25 +1,48 @@
 import "server-only";
-import { cookies } from "next/headers";
 
-const getUserInstances = async () => {
-  // TODO: Replace this with auth
-  const _ = cookies();
+import { auth } from "@/auth";
+import { PrismaClient } from "@prisma/client";
 
-  const instances: Instance[] = [
-    {
-      id: "1",
-      idx: 0,
-      name: "marshdapro's Instance",
-      imgSrc: "https://images.unsplash.com/photo-1532614338840-ab30cf10ed36?auto=format&h=80",
+const prisma = new PrismaClient();
+
+const getUserInstances = async (): Promise<Instance[]> => {
+  const session = await auth();
+
+  // TODO: handle unauthorised better?
+  if (!session?.user) return [];
+
+  const user = await prisma.user.upsert({
+    where: {
+      id: session.user.discordId,
     },
-    {
-      id: "2",
-      idx: 1,
-      name: "Other Instance",
+    update: {},
+    create: {
+      id: session.user.discordId,
+      instances: {
+        create: [
+          {
+            name: `${session.user.name}'s Instance`,
+            imgSrc: "https://images.unsplash.com/photo-1532614338840-ab30cf10ed36?auto=format&h=80",
+            ownerId: session.user.discordId,
+          },
+          {
+            name: `Other Instance`,
+            ownerId: session.user.discordId,
+          },
+        ]
+      }
     },
-  ];
+    include: {
+      instances: true,
+    }
+  });
 
-  return instances;
+  return user.instances.map((instance, idx) => ({
+    id: instance.id,
+    idx: idx,
+    name: instance.name,
+    imgSrc: instance.imgSrc ?? undefined,
+  }));
 };
 
 const service = {
