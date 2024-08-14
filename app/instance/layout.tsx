@@ -1,3 +1,4 @@
+import { auth, signIn } from "@/auth";
 import Navigation from "@/components/Navigation";
 import db from "@/services/db";
 import React from "react";
@@ -8,7 +9,16 @@ const Layout = async ({
 }: {
   children: React.ReactNode,
 }) => {
-  const instances = await db.getUserInstances();
+  const session = await auth();
+  if (!session) {
+    await signIn();
+    return;
+  }
+
+  const instances = await db.getUserInstances(
+    session.user.discordId,
+    session.user.name ?? undefined,
+  );
 
   return (
     <InstancesProvider instances={instances}>

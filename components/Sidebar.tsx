@@ -198,7 +198,7 @@ const InstanceNavItem: React.FC<InstanceNavItemProps> = ({ instance, selected, c
             />
           </AspectRatio>
           : <Typography color="neutral" level="body-lg">
-            {instance.name.split(/\s+/).map((word) => word[0].toUpperCase()).join("")}
+            {instance.name.split(/\s+/).map((word) => word[0].toUpperCase()).join("").substring(0,3)}
           </Typography>
         }
       </Card>

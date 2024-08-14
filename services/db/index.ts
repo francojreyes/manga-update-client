@@ -1,33 +1,27 @@
 import "server-only";
 
-import { auth } from "@/auth";
 import { PrismaClient } from "@prisma/client";
 
 const prisma = new PrismaClient();
 
-const getUserInstances = async (): Promise<Instance[]> => {
-  const session = await auth();
-
-  // TODO: handle unauthorised better?
-  if (!session?.user) return [];
-
+const getUserInstances = async (userId: string, userName?: string): Promise<Instance[]> => {
   const user = await prisma.user.upsert({
     where: {
-      id: session.user.discordId,
+      id: userId,
     },
     update: {},
     create: {
-      id: session.user.discordId,
+      id: userId,
       instances: {
         create: [
           {
-            name: `${session.user.name}'s Instance`,
+            name: `${userName ? userName + "'s" : "New"} Instance`,
             imgSrc: "https://images.unsplash.com/photo-1532614338840-ab30cf10ed36?auto=format&h=80",
-            ownerId: session.user.discordId,
+            ownerId: userId,
           },
           {
             name: `Other Instance`,
-            ownerId: session.user.discordId,
+            ownerId: userId,
           },
         ]
       }
