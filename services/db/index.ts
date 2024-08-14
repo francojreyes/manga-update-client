@@ -39,8 +39,22 @@ const getUserInstances = async (userId: string, userName?: string): Promise<Inst
   }));
 };
 
+const getInstance = async (instanceId: number) => {
+  return prisma.instance.findFirst({
+    where: {
+      id: instanceId,
+    },
+    include: {
+      manga: true,
+      members: true,
+      webhooks: true,
+    },
+  });
+};
+
 const service = {
   getUserInstances,
+  getInstance,
 };
 
 export default service;

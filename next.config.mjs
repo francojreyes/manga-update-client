@@ -14,11 +14,16 @@ const nextConfig = {
         port: "",
         pathname: "/**",
       },
+      {
+        protocol: "https",
+        hostname: "uploads.mangadex.org",
+        port: "",
+        pathname: "/**",
+      },
     ],
   },
   async redirects() {
     return [
-      // Basic redirect
       {
         source: "/",
         destination: "/instance/0/manga",
