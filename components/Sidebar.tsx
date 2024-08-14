@@ -90,7 +90,7 @@ const Sidebar: React.FC<SidebarProps> = ({ navOpen, setNavOpen }) => {
         </Stack>
         <Divider orientation="vertical"/>
         <Stack direction="column" width={navWidth - 80}>
-          <Stack width={navWidth - 80} direction="row" height={headerHeight} alignItems="center" px={1.5}>
+          <Stack width={navWidth - 80} direction="row" minHeight={headerHeight} alignItems="center" px={1.5}>
             <Typography
               level="title-md"
               fontWeight="bold"

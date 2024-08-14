@@ -21,7 +21,7 @@ const PageHeader: React.FC<PageHeaderProps> = ({ setNavOpen }) => {
   return <Sheet
     component={Stack}
     width={{ xs: "100vw", md: "100%" }}
-    height={headerHeight}
+    minHeight={headerHeight}
     direction="row"
     alignItems="center"
     spacing={1}
@@ -40,7 +40,7 @@ const PageHeader: React.FC<PageHeaderProps> = ({ setNavOpen }) => {
     >
       <MenuIcon/>
     </IconButton>
-    <Stack direction="column" justifyContent="center">
+    <Stack direction="column" justifyContent="center" spacing={pageName && selectedInstance?.name ? -0.5 : 0}>
       <Typography level="title-md" fontWeight="bold">
         <Skeleton loading={!pageName}>
           {pageName ?? "Placeholder"}
