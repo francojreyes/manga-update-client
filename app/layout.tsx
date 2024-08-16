@@ -1,8 +1,6 @@
-import CssBaseline from "@mui/joy/CssBaseline";
-import { CssVarsProvider } from "@mui/joy/styles";
+import ProviderRegistry from "@/app/ProviderRegistry";
 import type { Metadata } from "next";
 import "./globals.css";
-import { SessionProvider } from "next-auth/react";
 import React from "react";
 
 export const metadata: Metadata = {
@@ -18,12 +16,9 @@ export default function RootLayout({
   return (
     <html lang="en">
     <body>
-    <SessionProvider>
-      <CssVarsProvider defaultMode="dark">
-        <CssBaseline/>
-        {children}
-      </CssVarsProvider>
-    </SessionProvider>
+    <ProviderRegistry>
+      {children}
+    </ProviderRegistry>
     </body>
     </html>
   );
