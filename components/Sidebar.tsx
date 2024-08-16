@@ -82,7 +82,7 @@ const Sidebar: React.FC<SidebarProps> = ({ navOpen, setNavOpen }) => {
             <InstanceNavItem
               key={instance.id}
               instance={instance}
-              selected={instance.idx === selectedInstance?.idx}
+              selected={instance.idx === selectedInstance.idx}
               currentPage={currentPage}
             />
           ))}
@@ -97,9 +97,7 @@ const Sidebar: React.FC<SidebarProps> = ({ navOpen, setNavOpen }) => {
               overflow="hidden"
               textOverflow="ellipsis"
             >
-              <Skeleton variant="rectangular" width="100%" loading={!selectedInstance}>
-                {selectedInstance?.name ?? "Placeholder Instance"}
-              </Skeleton>
+              {selectedInstance.name}
             </Typography>
           </Stack>
           <Divider/>
@@ -127,7 +125,7 @@ const Sidebar: React.FC<SidebarProps> = ({ navOpen, setNavOpen }) => {
                   key={href}
                   Icon={Icon}
                   title={title}
-                  href={`/instance/${selectedInstance?.idx ?? 0}${href}`}
+                  href={`/instance/${selectedInstance.idx}${href}`}
                   selected={pathname.endsWith(href)}
                   onClick={() => setNavOpen(false)}
                 />

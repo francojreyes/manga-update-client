@@ -82,7 +82,7 @@ const getLatestChapter = async (mangaId: string, language: string): Promise<Chap
   return {
     chapterId: chapter.id,
     volume: chapter.attributes.volume,
-    chapter: chapter.attributes.chapter,
+    chapter: chapter.attributes.chapter ?? "Oneshot",
     readableAt: chapter.attributes.readableAt,
   }
 }

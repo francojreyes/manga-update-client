@@ -2,6 +2,7 @@
 
 import { theme } from "@/app/ProviderRegistry";
 import { useDebounceValue } from "@/hooks/useDebouncedValue";
+import useSelectedInstance from "@/hooks/useSelectedInstance";
 import mangadex from "@/services/mangadex";
 import AddIcon from "@mui/icons-material/Add";
 import AspectRatio from "@mui/joy/AspectRatio";
@@ -19,7 +20,7 @@ import Sheet from "@mui/joy/Sheet";
 import Stack from "@mui/joy/Stack";
 import Typography from "@mui/joy/Typography";
 import { useMediaQuery } from "@mui/system";
-import { useQuery } from "@tanstack/react-query";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
 import * as React from "react";
@@ -37,6 +38,27 @@ const Page = () => {
     queryKey: ["manga", mangaId],
     queryFn: () => mangadex.getManga(mangaId!),
     enabled: !!mangaId,
+  });
+
+  const queryClient = useQueryClient();
+  const selectedInstance = useSelectedInstance();
+  const addMangaMutation = useMutation({
+    mutationFn: () => fetch(
+      `/api/instance/${selectedInstance.id}/manga`,
+      {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ mangaId }),
+      }
+    ),
+    onSuccess: async () => {
+      await queryClient.invalidateQueries({
+        queryKey: ['instance', selectedInstance.id, "manga"]
+      });
+      router.back();
+    },
   });
 
   const renderMangaPreview = () => {
@@ -97,7 +119,12 @@ const Page = () => {
                 {renderMangaPreview()}
               </Sheet>
             )}
-            <Button disabled={!manga} startDecorator={<AddIcon/>}>
+            <Button
+              disabled={!manga}
+              startDecorator={<AddIcon/>}
+              loading={addMangaMutation.isPending}
+              onClick={() => addMangaMutation.mutate()}
+            >
               Add Manga
             </Button>
           </Stack>

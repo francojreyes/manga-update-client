@@ -18,7 +18,7 @@ const Layout: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const { data } = useQuery<{ manga: Manga[] }>({
     queryKey: ["instance", instance!.id, "manga"],
     queryFn: () => fetch(`/api/instance/${instance!.id}/manga`).then((res) => res.json()),
-    enabled: !!instance,
+    staleTime: 60 * 1000,
   });
 
   const [searchInput, setSearchInput] = React.useState("");

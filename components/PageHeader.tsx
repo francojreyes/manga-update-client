@@ -40,15 +40,15 @@ const PageHeader: React.FC<PageHeaderProps> = ({ setNavOpen }) => {
     >
       <MenuIcon/>
     </IconButton>
-    <Stack direction="column" justifyContent="center" spacing={pageName && selectedInstance?.name ? -0.5 : 0}>
+    <Stack direction="column" justifyContent="center" spacing={pageName ? -0.5 : 0}>
       <Typography level="title-md" fontWeight="bold">
         <Skeleton loading={!pageName}>
           {pageName ?? "Placeholder"}
         </Skeleton>
       </Typography>
       <Typography level="body-xs" display={{ md: "none" }}>
-        <Skeleton loading={!selectedInstance}>
-          {selectedInstance?.name ?? "Placeholder Instance"}
+        <Skeleton loading={!pageName}>
+          {selectedInstance.name ?? "Placeholder Instance"}
         </Skeleton>
       </Typography>
     </Stack>

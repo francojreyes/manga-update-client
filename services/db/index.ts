@@ -56,6 +56,41 @@ const getInstance = async (instanceId: number) => {
   });
 };
 
+const addInstanceManga = async (instanceId: number, mangaId: string) => {
+  await prisma.instance.update({
+    where: {
+      id: instanceId,
+    },
+    data: {
+      manga: {
+        connectOrCreate: {
+          where: {
+            id: mangaId,
+          },
+          create: {
+            id: mangaId,
+          }
+        }
+      }
+    }
+  });
+};
+
+const removeInstanceManga = async (instanceId: number, mangaId: string) => {
+  await prisma.instance.update({
+    where: {
+      id: instanceId,
+    },
+    data: {
+      manga: {
+        disconnect: {
+          id: mangaId,
+        }
+      }
+    }
+  });
+};
+
 const getLatestChapter = async (mangaId: string, language: string) => {
   return prisma.latestChapter.findUnique({
     select: {
@@ -75,7 +110,15 @@ const cacheLatestChapter = async (mangaId: string, language: string, chapter: Ch
     where: {
       mangaId_language: { mangaId, language }
     },
-    create: { mangaId, language, ...chapter },
+    create: {
+      language,
+      manga: {
+        connect: {
+          id: mangaId,
+        }
+      },
+      ...chapter
+    },
     update: chapter,
   });
 };
@@ -85,6 +128,8 @@ const service = {
   getInstance,
   getLatestChapter,
   cacheLatestChapter,
+  addInstanceManga,
+  removeInstanceManga,
 };
 
 export default service;
