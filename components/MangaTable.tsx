@@ -66,6 +66,7 @@ const MangaTable: React.FC<MangaTableProps> = ({ mangaData }) => {
                     textOverflow="ellipsis"
                     href={`https://mangadex.org/title/${manga.id}`}
                     color="neutral"
+                    sx={{ color: "var(--joy-palette-text-primary)" }}
                     target="_blank"
                     rel="noopener"
                     endDecorator={<OpenInNewIcon/>}

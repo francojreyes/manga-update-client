@@ -9,7 +9,7 @@ import React from "react";
 
 const queryClient = new QueryClient();
 
-const theme = extendTheme();
+export const theme = extendTheme();
 
 export default function ProviderRegistry({
   children,

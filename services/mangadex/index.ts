@@ -9,6 +9,26 @@ const throttle = pThrottle({
 });
 const throttledFetch = throttle(fetch);
 
+const getManga = async (mangaId: string) => {
+  const params = new URLSearchParams();
+  params.append("includes[]", "cover_art");
+  const res = await fetch(`${BASE_URL}/manga/${mangaId}?${params}`);
+  if (!res.ok) return null;
+
+  const json = await res.json();
+  return jsonToManga(json.data);
+}
+
+const jsonToManga = (json: any): Manga => {
+  const cover = json.relationships.find((rel: any) => rel.type === "cover_art");
+  return {
+    id: json.id,
+    cover: `https://uploads.mangadex.org/covers/${json.id}/${cover.attributes.fileName}.256.jpg`,
+    title: json.attributes.title.en,
+    status: json.attributes.status,
+  };
+};
+
 const getManyManga = async (mangaIds: string[]): Promise<{
   [mangaId: string]: Manga
 }> => {
@@ -36,15 +56,7 @@ const getManyManga = async (mangaIds: string[]): Promise<{
   return Object.fromEntries(
     responses
       .flatMap((json) => json.data)
-      .map((manga) => {
-        const cover = manga.relationships.find((rel: any) => rel.type === "cover_art");
-        return {
-          id: manga.id,
-          cover: `https://uploads.mangadex.org/covers/${manga.id}/${cover.attributes.fileName}.256.jpg`,
-          title: manga.attributes.title.en,
-          status: manga.attributes.status,
-        };
-      })
+      .map(jsonToManga)
       .sort((a, b) => a.title.localeCompare(b.title))
       .map((manga) => [manga.id, manga])
   );
@@ -76,6 +88,7 @@ const getLatestChapter = async (mangaId: string, language: string): Promise<Chap
 }
 
 const service = {
+  getManga,
   getManyManga,
   getLatestChapter,
 };

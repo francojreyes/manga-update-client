@@ -64,8 +64,7 @@ const Sidebar: React.FC<SidebarProps> = ({ navOpen, setNavOpen }) => {
 
   const pathname = usePathname();
   const pathSegments = pathname.split("/");
-  const currentPage = pathSegments[pathSegments.length - 1];
-  const instanceIdx = +pathSegments[pathSegments.length - 2];
+  const currentPage = pathSegments.slice(3).join("/");
 
   return <>
     <Sheet
@@ -83,7 +82,7 @@ const Sidebar: React.FC<SidebarProps> = ({ navOpen, setNavOpen }) => {
             <InstanceNavItem
               key={instance.id}
               instance={instance}
-              selected={instance.idx === instanceIdx}
+              selected={instance.idx === selectedInstance?.idx}
               currentPage={currentPage}
             />
           ))}
