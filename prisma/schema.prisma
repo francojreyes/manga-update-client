@@ -16,13 +16,14 @@ model User {
 }
 
 model Instance {
-  id       Int       @id @default(autoincrement())
-  name     String
-  imgSrc   String?
-  ownerId  String
-  members  User[]
-  manga    Manga[]
-  webhooks Webhook[]
+  id              Int       @id @default(autoincrement())
+  name            String
+  imgSrc          String?
+  ownerId         String
+  chapterLanguage String    @default("en")
+  members         User[]
+  manga           Manga[]
+  webhooks        Webhook[]
 }
 
 model Webhook {
@@ -32,6 +33,19 @@ model Webhook {
 }
 
 model Manga {
-  id        String     @id // MangaDex UUID
-  instances Instance[]
+  id             String          @id // MangaDex UUID
+  instances      Instance[]
+  latestChapters LatestChapter[]
+}
+
+model LatestChapter {
+  manga      Manga    @relation(fields: [mangaId], references: [id])
+  mangaId    String
+  language   String
+  chapterId  String
+  volume     String?
+  chapter    String
+  readableAt DateTime
+
+  @@id([mangaId, language])
 }

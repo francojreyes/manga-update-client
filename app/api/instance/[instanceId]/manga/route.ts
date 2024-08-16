@@ -25,7 +25,26 @@ export const GET = auth(async (req, { params }) => {
     );
   }
 
-  const manga = await mangadex.getManyManga(instance.manga.map((manga) => manga.id));
+  const latestChaptersById = Object.fromEntries(
+    instance.manga.map((manga) => [manga.id, manga.latestChapters[0]])
+  );
+  const mangaById = await mangadex.getManyManga(instance.manga.map((manga) => manga.id));
+
+  const manga: Manga[] = instance.manga.map((manga) => {
+    const latestChapter = latestChaptersById[manga.id];
+    return {
+      ...mangaById[manga.id],
+      latestChapter: latestChapter
+        ? {
+          chapterId: latestChapter.chapterId,
+          volume: latestChapter.volume,
+          chapter: latestChapter.chapter,
+          readableAt: latestChapter.readableAt.toISOString()
+        }
+        : undefined
+    }
+  });
+
   return NextResponse.json({ manga });
 });
 

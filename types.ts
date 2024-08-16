@@ -8,9 +8,17 @@ interface Instance {
 
 type MangaStatus = "ongoing" | "completed" | "hiatus" | "cancelled";
 
+interface Chapter {
+  chapterId: string;
+  volume: string | null;
+  chapter: string;
+  readableAt: string;
+}
+
 interface Manga {
   id: string;
   cover: string;
-  name: string;
+  title: string;
   status: MangaStatus;
+  latestChapter?: Chapter;
 }
