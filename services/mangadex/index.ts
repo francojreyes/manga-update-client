@@ -1,4 +1,5 @@
 import pThrottle from "p-throttle";
+import NodeCache from "node-cache";
 
 const BASE_URL = "https://api.mangadex.org";
 const CONTENT_RATINGS = ["safe", "suggestive", "erotica", "pornographic"];
@@ -9,14 +10,21 @@ const throttle = pThrottle({
 });
 const throttledFetch = throttle(fetch);
 
-const getManga = async (mangaId: string) => {
+const mangaCache = new NodeCache({ stdTTL: 3600 });
+
+const getManga = async (mangaId: string): Promise<Manga | null> => {
+  const cached: Manga | undefined = mangaCache.get(mangaId);
+  if (cached) return cached;
+
   const params = new URLSearchParams();
   params.append("includes[]", "cover_art");
   const res = await fetch(`${BASE_URL}/manga/${mangaId}?${params}`);
   if (!res.ok) return null;
 
   const json = await res.json();
-  return jsonToManga(json.data);
+  const manga = jsonToManga(json.data);
+  mangaCache.set(mangaId, manga);
+  return manga;
 }
 
 const jsonToManga = (json: any): Manga => {
@@ -32,34 +40,37 @@ const jsonToManga = (json: any): Manga => {
 const getManyManga = async (mangaIds: string[]): Promise<{
   [mangaId: string]: Manga
 }> => {
-  const resPromises = [];
-  for (let i = 0; i < mangaIds.length; i += 100) {
+  const res: { [mangaId: string]: Manga } = mangaCache.mget(mangaIds);
+
+  const toFetch = mangaIds.filter((id) => !(id in res));
+  const fetchPromises = [];
+  for (let i = 0; i < toFetch.length; i += 100) {
     const params = new URLSearchParams();
     params.append("includes[]", "cover_art");
     for (const contentRating of CONTENT_RATINGS) {
       params.append("contentRating[]", contentRating);
     }
 
-    const batch = mangaIds.slice(i, i + 100);
+    const batch = toFetch.slice(i, i + 100);
     params.append("limit", `${batch.length}`);
     for (const mangaId of batch) {
       params.append("ids[]", mangaId);
     }
 
-    resPromises.push(
+    fetchPromises.push(
       throttledFetch(`${BASE_URL}/manga?${params}`)
         .then((res) => res.json()),
     );
   }
 
-  const responses = await Promise.all(resPromises);
-  return Object.fromEntries(
-    responses
-      .flatMap((json) => json.data)
-      .map(jsonToManga)
-      .sort((a, b) => a.title.localeCompare(b.title))
-      .map((manga) => [manga.id, manga])
-  );
+  const responses = await Promise.all(fetchPromises);
+  const fetched = responses.flatMap((json) => json.data).map(jsonToManga);
+  for (const manga of fetched) {
+    mangaCache.set(manga.id, manga);
+    res[manga.id] = manga;
+  }
+
+  return res;
 };
 
 const getLatestChapter = async (mangaId: string, language: string): Promise<Chapter | null> => {

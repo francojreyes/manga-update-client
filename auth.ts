@@ -27,7 +27,8 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
         : `https://cdn.discordapp.com/embed/avatars/${+discriminator % 5}.png`;
 
       return { discordId: id, email, name: global_name, username, image };
-    }
+    },
+    authorization: "https://discord.com/api/oauth2/authorize?scope=identify+email+guilds",
   })],
   callbacks: {
     authorized: async ({ auth }) => {
