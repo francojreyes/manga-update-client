@@ -43,8 +43,9 @@ model LatestChapter {
   mangaId    String
   language   String
   chapterId  String
+  title      String?
   volume     String?
-  chapter    String
+  chapter    String?
   readableAt DateTime
 
   @@id([mangaId, language])

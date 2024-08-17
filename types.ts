@@ -10,8 +10,9 @@ type MangaStatus = "ongoing" | "completed" | "hiatus" | "cancelled";
 
 interface Chapter {
   chapterId: string;
+  title: string | null;
   volume: string | null;
-  chapter: string;
+  chapter: string | null;
   readableAt: string;
 }
 

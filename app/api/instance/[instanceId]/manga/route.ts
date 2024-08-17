@@ -39,6 +39,7 @@ export const GET = auth(async (req, { params }) => {
           chapterId: latestChapter.chapterId,
           volume: latestChapter.volume,
           chapter: latestChapter.chapter,
+          title: latestChapter.title,
           readableAt: latestChapter.readableAt.toISOString()
         }
         : undefined

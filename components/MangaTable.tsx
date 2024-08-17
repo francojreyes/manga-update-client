@@ -183,7 +183,7 @@ const LatestUpdate: React.FC<{
       <Typography level="title-sm">
         <Skeleton loading={isPending}>
           {!isPending
-            ? displayChapter(chapter.volume, chapter.chapter)
+            ? displayChapter(chapter)
             : "Volume X, Chapter XX"
           }
         </Skeleton>
