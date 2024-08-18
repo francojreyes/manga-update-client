@@ -1,5 +1,6 @@
 "use client";
 
+import MangaList from "@/components/MangaList";
 import MangaTable from "@/components/MangaTable";
 import useSelectedInstance from "@/hooks/useSelectedInstance";
 import AddIcon from "@mui/icons-material/Add";
@@ -22,11 +23,15 @@ const Layout: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   });
 
   const [searchInput, setSearchInput] = React.useState("");
+  const displayedData = data?.manga?.filter((manga) => manga.title.toLowerCase().includes(searchInput));
 
   return (
     <>
-      <Stack direction="column" p={{ xs: 2, md: 4 }} spacing={2} width="100%" height="100%">
-        <Stack direction="row" alignItems="flex-end" width="100%" spacing={1}>
+      <Stack direction="column" p={{ xs: 0, md: 4 }} spacing={{ xs: 1, md: 2 }} width="100%" height="100%">
+        <Stack
+          direction="row" alignItems="flex-end" width="100%" spacing={1}
+          pt={{ xs: 2, md: 0 }} px={{ xs: 1, md: 0 }}
+        >
           <Input
             sx={{ flexGrow: 1 }}
             placeholder="Search for manga"
@@ -52,9 +57,8 @@ const Layout: React.FC<{ children: React.ReactNode }> = ({ children }) => {
             <AddIcon/>
           </IconButton>
         </Stack>
-        <MangaTable
-          mangaData={data?.manga?.filter((manga) => manga.title.toLowerCase().includes(searchInput))}
-        />
+        <MangaTable mangaData={displayedData}/>
+        <MangaList mangaData={displayedData}/>
       </Stack>
       {children}
     </>

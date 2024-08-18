@@ -1,9 +1,9 @@
 import RemoveMangaModal from "@/components/RemoveMangaModal";
+import StatusPill from "@/components/StatusPill";
 import useSelectedInstance from "@/hooks/useSelectedInstance";
 import displayChapter from "@/utils/displayChapter";
 import OpenInNewIcon from "@mui/icons-material/OpenInNew";
 import RemoveCircleOutlineIcon from "@mui/icons-material/RemoveCircleOutline";
-import { Chip, ColorPaletteProp } from "@mui/joy";
 import AspectRatio from "@mui/joy/AspectRatio";
 import IconButton from "@mui/joy/IconButton";
 import Link from "@mui/joy/Link";
@@ -66,7 +66,7 @@ const MangaTable: React.FC<MangaTableProps> = ({ mangaData }) => {
           </Stack>
         </td>
         <td>
-          <StatusPill status={manga.status}/>
+          <StatusPill size="md" status={manga.status}/>
         </td>
         <td>
           <LatestUpdate
@@ -87,7 +87,7 @@ const MangaTable: React.FC<MangaTableProps> = ({ mangaData }) => {
     <>
       <Sheet
         variant="outlined"
-        sx={{
+        sx={(theme) => ({
           display: "initial",
           maxHeight: "100%",
           width: "100%",
@@ -95,7 +95,8 @@ const MangaTable: React.FC<MangaTableProps> = ({ mangaData }) => {
           flexShrink: 1,
           overflow: "auto",
           minHeight: 0,
-        }}
+          [theme.breakpoints.down("md")]: { display: "none" },
+        })}
       >
         <Table
           stickyHeader
@@ -127,31 +128,6 @@ const MangaTable: React.FC<MangaTableProps> = ({ mangaData }) => {
       />
     </>
   );
-};
-
-const StatusPill: React.FC<{ status: MangaStatus }> = ({ status }) => {
-  let text: string;
-  let color: ColorPaletteProp;
-  switch (status) {
-    case "cancelled":
-      text = "Cancelled";
-      color = "danger";
-      break;
-    case "hiatus":
-      text = "Hiatus";
-      color = "warning";
-      break;
-    case "completed":
-      text = "Completed";
-      color = "primary";
-      break;
-    case "ongoing":
-      text = "Ongoing";
-      color = "success";
-      break;
-  }
-
-  return <Chip variant="soft" color={color}>{text}</Chip>;
 };
 
 const LatestUpdate: React.FC<{
