@@ -22,9 +22,16 @@ const getSelfGuilds = async (api: API) => {
 }
 
 const getGuild = async (api: API, guildId: string) => {
-  return api.rest.get(Routes.guildWidgetJSON(guildId));
+  try {
+    return api.guilds.getWidget(guildId);
+  } catch (e) {
+    return null;
+  }
 }
 
+const getWebhook = async (api: API, webhookId: string, webhookToken: string) => {
+  return api.webhooks.get(webhookId, { token: webhookToken });
+}
 
 const service = {
   createUserAPI,
@@ -32,6 +39,7 @@ const service = {
   getUser,
   getSelfGuilds,
   getGuild,
+  getWebhook,
 };
 
 export default service;

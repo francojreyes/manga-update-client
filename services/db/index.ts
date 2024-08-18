@@ -51,7 +51,11 @@ const getInstance = async (instanceId: number) => {
         }
       },
       members: true,
-      webhooks: true,
+      webhooks: {
+        include: {
+          guild: true,
+        },
+      },
     },
   });
 };
@@ -135,6 +139,49 @@ const cacheGuilds = async (guilds: Guild[]) => {
   );
 };
 
+const addInstanceWebhook = async (instanceId: number, webhook: Webhook) => {
+  await prisma.instance.update({
+    where: {
+      id: instanceId,
+    },
+    data: {
+      webhooks: {
+        connectOrCreate: {
+          where: {
+            id: webhook.id,
+          },
+          create: {
+            ...webhook,
+            guild: {
+              connectOrCreate: {
+                where: {
+                  id: webhook.guild.id,
+                },
+                create: webhook.guild,
+              }
+            }
+          }
+        }
+      }
+    }
+  });
+};
+
+const removeInstanceWebhook = async (instanceId: number, webhookId: string) => {
+  await prisma.instance.update({
+    where: {
+      id: instanceId,
+    },
+    data: {
+      webhooks: {
+        disconnect: {
+          id: webhookId,
+        }
+      }
+    }
+  });
+};
+
 const service = {
   getUserInstances,
   getInstance,
@@ -143,6 +190,8 @@ const service = {
   addInstanceManga,
   removeInstanceManga,
   cacheGuilds,
+  addInstanceWebhook,
+  removeInstanceWebhook,
 };
 
 export default service;

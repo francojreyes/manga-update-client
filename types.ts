@@ -1,4 +1,3 @@
-
 interface Instance {
   id: number;
   idx: number;
@@ -28,4 +27,13 @@ interface Guild {
   id: string;
   name: string | null;
   icon: string | null;
+}
+
+interface Webhook {
+  id: string;
+  token: string;
+  name: string;
+  avatar: string | null;
+  guild: Guild;
+  channelId: string;
 }

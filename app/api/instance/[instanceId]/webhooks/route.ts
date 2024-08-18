@@ -1,6 +1,6 @@
 import { auth } from "@/auth";
 import db from "@/services/db";
-import mangadex from "@/services/mangadex";
+import discord from "@/services/discord";
 import { NextResponse } from "next/server";
 
 export const GET = auth(async (req, { params }) => {
@@ -25,30 +25,7 @@ export const GET = auth(async (req, { params }) => {
     );
   }
 
-  const latestChaptersById = Object.fromEntries(
-    instance.manga.map((manga) => [manga.id, manga.latestChapters[0]])
-  );
-  const mangaById = await mangadex.getManyManga(instance.manga.map((manga) => manga.id));
-
-  const manga: Manga[] = instance.manga
-    .map((manga) => {
-      const latestChapter = latestChaptersById[manga.id];
-      return {
-        ...mangaById[manga.id],
-        latestChapter: latestChapter
-          ? {
-            chapterId: latestChapter.chapterId,
-            volume: latestChapter.volume,
-            chapter: latestChapter.chapter,
-            title: latestChapter.title,
-            readableAt: latestChapter.readableAt.toISOString()
-          }
-          : undefined
-      };
-    })
-    .sort((a, b) => a.title.localeCompare(b.title));
-
-  return NextResponse.json({ manga });
+  return NextResponse.json({ webhooks: instance.webhooks });
 });
 
 export const POST = auth(async (req, { params }) => {
@@ -73,16 +50,25 @@ export const POST = auth(async (req, { params }) => {
     );
   }
 
-  const body = await req.json();
-  const mangaId = body.mangaId;
-  if (typeof mangaId !== "string") {
+  const { id, token } = await req.json();
+  if (typeof id !== "string" || typeof token !== "string") {
     return NextResponse.json(
-      { message: "Invalid mangaId provided" },
+      { message: "Invalid id or token provided" },
       { status: 400 },
     );
   }
 
-  await db.addInstanceManga(instanceId, mangaId);
+  const userAPI = discord.createUserAPI(req.auth!.access_token);
+  const webhook = await discord.getWebhook(userAPI, id, token);
+
+  await db.addInstanceWebhook(instanceId, {
+    id: webhook.id,
+    token: webhook.token!,
+    name: webhook.name!,
+    avatar: webhook.avatar,
+    guild: { id: webhook.guild_id!, name: null, icon: null },
+    channelId: webhook.channel_id!,
+  });
   return NextResponse.json({});
 });
 
@@ -108,15 +94,14 @@ export const DELETE = auth(async (req, { params }) => {
     );
   }
 
-  const body = await req.json();
-  const mangaId = body.mangaId;
-  if (typeof mangaId !== "string") {
+  const { id } = await req.json();
+  if (typeof id !== "string") {
     return NextResponse.json(
-      { message: "Invalid mangaId provided" },
+      { message: "Invalid id provided" },
       { status: 400 },
     );
   }
 
-  await db.removeInstanceManga(instanceId, mangaId);
+  await db.removeInstanceWebhook(instanceId, id);
   return NextResponse.json({});
 });

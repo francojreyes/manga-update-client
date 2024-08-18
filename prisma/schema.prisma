@@ -36,9 +36,12 @@ model Guild {
 model Webhook {
   id        String     @id
   token     String
+  name      String
+  avatar    String?
   instances Instance[]
   guild     Guild      @relation(fields: [guildId], references: [id])
   guildId   String
+  channelId String
 }
 
 model Manga {
