@@ -23,3 +23,9 @@ interface Manga {
   status: MangaStatus;
   latestChapter?: Chapter;
 }
+
+interface Guild {
+  id: string;
+  name: string | null;
+  icon: string | null;
+}

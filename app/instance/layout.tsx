@@ -1,6 +1,7 @@
 import { auth, signIn } from "@/auth";
 import Navigation from "@/components/Navigation";
 import db from "@/services/db";
+import cacheUserGuilds from "@/utils/cacheUserGuilds";
 import React from "react";
 import InstancesProvider from "./InstancesProvider";
 
@@ -14,6 +15,9 @@ const Layout = async ({
     await signIn();
     return;
   }
+
+  // Run when the user first loads the "root" layout
+  await cacheUserGuilds();
 
   const instances = await db.getUserInstances(
     session.user.discordId,

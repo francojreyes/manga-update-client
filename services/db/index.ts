@@ -40,7 +40,7 @@ const getUserInstances = async (userId: string, userName?: string): Promise<Inst
 };
 
 const getInstance = async (instanceId: number) => {
-  return prisma.instance.findFirst({
+  return prisma.instance.findUnique({
     where: {
       id: instanceId,
     },
@@ -123,6 +123,18 @@ const cacheLatestChapter = async (mangaId: string, language: string, chapter: Ch
   });
 };
 
+const cacheGuilds = async (guilds: Guild[]) => {
+  await prisma.$transaction(
+    guilds.map(({ id, name, icon }) =>
+      prisma.guild.upsert({
+        where: { id },
+        update: { name, icon },
+        create: { id, name, icon },
+      })
+    )
+  );
+};
+
 const service = {
   getUserInstances,
   getInstance,
@@ -130,6 +142,7 @@ const service = {
   cacheLatestChapter,
   addInstanceManga,
   removeInstanceManga,
+  cacheGuilds,
 };
 
 export default service;

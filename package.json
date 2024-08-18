@@ -9,6 +9,8 @@
     "lint": "next lint"
   },
   "dependencies": {
+    "@discordjs/core": "^1.2.0",
+    "@discordjs/rest": "^2.3.0",
     "@emotion/react": "^11.13.0",
     "@emotion/styled": "^11.13.0",
     "@mui/icons-material": "^5.16.6",
@@ -21,10 +23,12 @@
     "next": "14.2.5",
     "next-auth": "^5.0.0-beta.20",
     "node-cache": "^5.1.2",
+    "node-loader": "^2.0.0",
     "p-throttle": "^6.2.0",
     "react": "^18",
     "react-dom": "^18",
-    "server-only": "^0.0.1"
+    "server-only": "^0.0.1",
+    "zlib-sync": "^0.1.9"
   },
   "devDependencies": {
     "@types/node": "^20",

@@ -4,6 +4,7 @@ import Discord, { DiscordProfile } from "next-auth/providers/discord";
 
 declare module "next-auth" {
   interface Session {
+    access_token: string;
     user: {
       discordId: string;
       username: string;
@@ -13,6 +14,7 @@ declare module "next-auth" {
 
 declare module "@auth/core/jwt" {
   interface JWT extends DefaultJWT {
+    access_token: string;
     discordId: string;
     username: string;
   }
@@ -34,13 +36,18 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
     authorized: async ({ auth }) => {
       return !!auth;
     },
-    jwt({ token, user }) {
+    jwt({ token, user, account }) {
+      if (account?.access_token) {
+        token.access_token = account.access_token;
+      }
+
       if (user) { // User is available during sign-in
         Object.assign(token, user);
       }
       return token;
     },
     session({ session, token }) {
+      session.access_token = token.access_token;
       session.user.discordId = token.discordId;
       session.user.username = token.username;
       return session;
