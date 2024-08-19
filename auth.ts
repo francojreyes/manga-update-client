@@ -1,5 +1,5 @@
-import imgHashToFilename from "@/utils/imgHashToFilename";
 import { DefaultJWT } from "@auth/core/jwt";
+import { calculateUserDefaultAvatarIndex, CDN } from "@discordjs/rest";
 import NextAuth, { DefaultSession } from "next-auth";
 import Discord, { DiscordProfile } from "next-auth/providers/discord";
 
@@ -24,10 +24,10 @@ declare module "@auth/core/jwt" {
 export const { handlers, signIn, signOut, auth } = NextAuth({
   providers: [Discord({
     async profile({ id, email, username, discriminator, global_name, avatar }: DiscordProfile) {
-      const avatarIdx = discriminator == "0" ? (+id >> 22) % 6 : +discriminator % 5;
+      const cdn = new CDN();
       const image = avatar
-        ? `https://cdn.discordapp.com/avatars/${id}/${imgHashToFilename(avatar)}`
-        : `https://cdn.discordapp.com/embed/avatars/${avatarIdx}.png`;
+        ? cdn.avatar(id, avatar)
+        : cdn.defaultAvatar(calculateUserDefaultAvatarIndex(discriminator));
 
       return { discordId: id, email, name: global_name, username, image };
     },
