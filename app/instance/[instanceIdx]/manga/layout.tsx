@@ -17,8 +17,8 @@ const Layout: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const router = useRouter();
   const instance = useSelectedInstance();
   const { data } = useQuery<{ manga: Manga[] }>({
-    queryKey: ["instance", instance!.id, "manga"],
-    queryFn: () => fetch(`/api/instance/${instance!.id}/manga`).then((res) => res.json()),
+    queryKey: ["instance", instance.id, "manga"],
+    queryFn: () => fetch(`/api/instance/${instance.id}/manga`).then((res) => res.json()),
     staleTime: 60 * 1000,
   });
 

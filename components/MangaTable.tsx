@@ -1,5 +1,6 @@
 import RemoveMangaModal from "@/components/RemoveMangaModal";
 import StatusPill from "@/components/StatusPill";
+import StyledTable from "@/components/StyledTable";
 import useSelectedInstance from "@/hooks/useSelectedInstance";
 import displayChapter from "@/utils/displayChapter";
 import OpenInNewIcon from "@mui/icons-material/OpenInNew";
@@ -7,10 +8,8 @@ import RemoveCircleOutlineIcon from "@mui/icons-material/RemoveCircleOutline";
 import AspectRatio from "@mui/joy/AspectRatio";
 import IconButton from "@mui/joy/IconButton";
 import Link from "@mui/joy/Link";
-import Sheet from "@mui/joy/Sheet";
 import Skeleton from "@mui/joy/Skeleton";
 import Stack from "@mui/joy/Stack";
-import Table from "@mui/joy/Table";
 import Typography from "@mui/joy/Typography";
 import { useQuery } from "@tanstack/react-query";
 import { formatDistanceToNowStrict } from "date-fns";
@@ -85,42 +84,19 @@ const MangaTable: React.FC<MangaTableProps> = ({ mangaData }) => {
 
   return (
     <>
-      <Sheet
-        variant="outlined"
-        sx={(theme) => ({
-          display: "initial",
-          maxHeight: "100%",
-          width: "100%",
-          borderRadius: "sm",
-          flexShrink: 1,
-          overflow: "auto",
-          minHeight: 0,
-          [theme.breakpoints.down("md")]: { display: "none" },
-        })}
-      >
-        <Table
-          stickyHeader
-          sx={{
-            "--TableCell-headBackground": "var(--joy-palette-background-level1)",
-            "--Table-headerUnderlineThickness": "1px",
-            "--TableRow-hoverBackground": "var(--joy-palette-background-level1)",
-            "--TableCell-paddingY": "4px",
-            "--TableCell-paddingX": "8px",
-          }}
-        >
-          <thead>
-          <tr>
-            <th style={{ padding: "12px 6px" }}>Title</th>
-            <th style={{ width: 120, padding: "12px 6px" }}>Status</th>
-            <th style={{ width: 200, padding: "12px 6px" }}>Latest Update</th>
-            <th style={{ width: 60, padding: "12px 6px" }}></th>
-          </tr>
-          </thead>
-          <tbody>
-          {renderRows()}
-          </tbody>
-        </Table>
-      </Sheet>
+      <StyledTable>
+        <thead>
+        <tr>
+          <th style={{ padding: "12px 6px" }}>Title</th>
+          <th style={{ width: 120, padding: "12px 6px" }}>Status</th>
+          <th style={{ width: 200, padding: "12px 6px" }}>Latest Update</th>
+          <th style={{ width: 60, padding: "12px 6px" }}></th>
+        </tr>
+        </thead>
+        <tbody>
+        {renderRows()}
+        </tbody>
+      </StyledTable>
       <RemoveMangaModal
         instanceId={instance.id}
         mangaToRemove={mangaToRemove}

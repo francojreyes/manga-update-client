@@ -2,6 +2,7 @@ import { useInstancesContext } from "@/app/instance/InstancesProvider";
 import ModeToggle from "@/components/ModeToggle";
 import { headerHeight } from "@/components/PageHeader";
 import useSelectedInstance from "@/hooks/useSelectedInstance";
+import getInitials from "@/utils/getInitials";
 import { SvgIconComponent } from "@mui/icons-material";
 import AutoStoriesIcon from "@mui/icons-material/AutoStories";
 import LogoutIcon from "@mui/icons-material/Logout";
@@ -195,7 +196,7 @@ const InstanceNavItem: React.FC<InstanceNavItemProps> = ({ instance, selected, c
             />
           </AspectRatio>
           : <Typography color="neutral" level="body-lg">
-            {instance.name.split(/\s+/).map((word) => word[0].toUpperCase()).join("").substring(0,3)}
+            {getInitials(instance.name)}
           </Typography>
         }
       </Card>
