@@ -139,7 +139,10 @@ const cacheGuilds = async (guilds: Guild[]) => {
   );
 };
 
-const addInstanceWebhook = async (instanceId: number, webhook: Webhook) => {
+const addInstanceWebhook = async (
+  instanceId: number,
+  webhook: Omit<Webhook, 'name' | 'avatar'>
+) => {
   await prisma.instance.update({
     where: {
       id: instanceId,

@@ -13,7 +13,7 @@ const throttledFetch = throttle(fetch);
 const mangaCache = new NodeCache({ stdTTL: 3600 });
 
 const getManga = async (mangaId: string): Promise<Manga | null> => {
-  const cached: Manga | undefined = mangaCache.get(mangaId);
+  const cached = mangaCache.get<Manga>(mangaId);
   if (cached) return cached;
 
   const params = new URLSearchParams();

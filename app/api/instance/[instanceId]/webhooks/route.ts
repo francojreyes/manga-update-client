@@ -25,7 +25,13 @@ export const GET = auth(async (req, { params }) => {
     );
   }
 
-  return NextResponse.json({ webhooks: instance.webhooks });
+  const userAPI = discord.createUserAPI(req.auth!.access_token);
+  const webhookPromises = instance.webhooks.map(
+    (webhook) => discord.getWebhook(userAPI, webhook.id, webhook.token)
+      .then(({ name, avatar }) => ({ ...webhook, name, avatar }))
+  );
+
+  return NextResponse.json({ webhooks: await Promise.all(webhookPromises) });
 });
 
 export const POST = auth(async (req, { params }) => {
@@ -64,8 +70,6 @@ export const POST = auth(async (req, { params }) => {
   await db.addInstanceWebhook(instanceId, {
     id: webhook.id,
     token: webhook.token!,
-    name: webhook.name!,
-    avatar: webhook.avatar,
     guild: { id: webhook.guild_id!, name: null, icon: null },
     channelId: webhook.channel_id!,
   });
