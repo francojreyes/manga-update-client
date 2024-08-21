@@ -34,6 +34,7 @@ const Layout: React.FC<{ children: React.ReactNode }> = ({ children }) => {
         >
           <Input
             sx={{ flexGrow: 1 }}
+            name="Manga Search"
             placeholder="Search for manga"
             startDecorator={<SearchIcon/>}
             value={searchInput}

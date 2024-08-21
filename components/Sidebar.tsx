@@ -191,6 +191,7 @@ const InstanceNavItem: React.FC<InstanceNavItemProps> = ({ instance, selected, c
           ? <AspectRatio ratio="1" sx={{ width: 50 }}>
             <Image
               fill
+              sizes="50px"
               src={instance.imgSrc}
               alt={`image for ${instance.name}`}
             />

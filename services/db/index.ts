@@ -185,6 +185,14 @@ const removeInstanceWebhook = async (instanceId: number, webhookId: string) => {
   });
 };
 
+const getGuild = async (guildId: string) => {
+  return prisma.guild.upsert({
+    where: { id: guildId },
+    create: { id: guildId },
+    update: {},
+  });
+}
+
 const service = {
   getUserInstances,
   getInstance,
@@ -195,6 +203,7 @@ const service = {
   cacheGuilds,
   addInstanceWebhook,
   removeInstanceWebhook,
+  getGuild,
 };
 
 export default service;

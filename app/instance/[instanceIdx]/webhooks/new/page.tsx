@@ -1,11 +1,11 @@
 "use client";
 
 import { theme } from "@/app/ProviderRegistry";
+import CompactWebhook from "@/components/CompactWebhook";
 import { useDebounceValue } from "@/hooks/useDebouncedValue";
 import useSelectedInstance from "@/hooks/useSelectedInstance";
-import mangadex from "@/services/mangadex";
+import parseWebhookURL from "@/utils/parseWebhookURL";
 import AddIcon from "@mui/icons-material/Add";
-import AspectRatio from "@mui/joy/AspectRatio";
 import Button from "@mui/joy/Button";
 import CircularProgress from "@mui/joy/CircularProgress";
 import DialogContent from "@mui/joy/DialogContent";
@@ -21,47 +21,50 @@ import Stack from "@mui/joy/Stack";
 import Typography from "@mui/joy/Typography";
 import { useMediaQuery } from "@mui/system";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import Image from "next/image";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import * as React from "react";
-
-const UUID_REGEX = /[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}/;
 
 const Page = () => {
   const router = useRouter();
+  const params = useSearchParams();
   const isMobile = useMediaQuery(theme.breakpoints.down("md"));
 
-  const [input, debounceInput, setInput] = useDebounceValue("", 500);
-  const mangaId = debounceInput.match(UUID_REGEX)?.[0];
+  const [input, debounceInput, setInput] = useDebounceValue(params.get("url") ?? "", 500);
+  const parsedWebhook = parseWebhookURL(debounceInput);
 
-  const { data: manga, isPending, error } = useQuery<Manga | null>({
-    queryKey: ["manga", mangaId],
-    queryFn: () => mangadex.getManga(mangaId!),
-    enabled: !!mangaId,
+  const { data: webhook, isPending, error } = useQuery<Webhook>({
+    queryKey: ["webhook", parsedWebhook?.id],
+    queryFn: () => fetch(`/api/webhook/${parsedWebhook?.id}/${parsedWebhook?.token}`)
+      .then(res => {
+        if (!res.ok) throw new Error("Unknown webhook")
+        return res.json();
+      }),
+    enabled: !!parsedWebhook,
+    retry: false,
   });
 
   const queryClient = useQueryClient();
   const selectedInstance = useSelectedInstance();
-  const addMangaMutation = useMutation({
+  const addWebhookMutation = useMutation({
     mutationFn: () => fetch(
-      `/api/instance/${selectedInstance.id}/manga`,
+      `/api/instance/${selectedInstance.id}/webhooks`,
       {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify({ mangaId }),
+        body: JSON.stringify(parsedWebhook),
       }
     ),
     onSuccess: async () => {
       await queryClient.invalidateQueries({
-        queryKey: ['instance', selectedInstance.id, "manga"]
+        queryKey: ["instance", selectedInstance.id, "webhooks"]
       });
       router.back();
     },
   });
 
-  const renderMangaPreview = () => {
+  const renderWebhookPreview = () => {
     if (error) return (
       <Typography width="100%" textAlign="center" my={2}>
         {`${error}`}
@@ -72,21 +75,9 @@ const Page = () => {
         <CircularProgress/>
       </Stack>
     );
-    if (manga == null) return (
-      <Typography width="100%" textAlign="center" my={2}>
-        No manga found
-      </Typography>
-    );
 
     return (
-      <Stack direction="row" alignItems="center" spacing={2} width="100%" height="100%">
-        <AspectRatio ratio="1/1.425" sx={{ width: 70, borderRadius: theme => theme.radius.sm }}>
-          <Image fill src={manga.cover} alt={`Cover art of ${manga.title}`}/>
-        </AspectRatio>
-        <Typography level="title-sm" maxWidth="100%" whiteSpace="wrap">
-          {manga.title}
-        </Typography>
-      </Stack>
+      <CompactWebhook webhook={webhook}/>
     );
   };
 
@@ -94,38 +85,38 @@ const Page = () => {
     <Modal open={true} onClose={() => router.back()}>
       <ModalDialog layout={isMobile ? "fullscreen" : "center"} sx={{ width: { xs: "100%", md: 400 } }}>
         <ModalClose/>
-        <DialogTitle>Add Manga</DialogTitle>
+        <DialogTitle>Add Webhook</DialogTitle>
         <DialogContent>
           <Stack spacing={1.5}>
             <FormControl>
-              <FormLabel>Manga URL</FormLabel>
+              <FormLabel>Webhook URL</FormLabel>
               <Input
-                placeholder="https://mangadex.org/title/"
+                placeholder="https://discord.com/api/webhooks/"
                 value={input}
                 onChange={(e) => setInput(e.target.value)}
               />
             </FormControl>
-            {mangaId && (
+            {parsedWebhook && (
               <Sheet
                 variant="outlined" sx={{
                 display: "flex",
-                direction: "column",
+                flexDirection: "column",
                 justifyContent: "center",
                 borderRadius: "sm",
                 width: "100%",
                 p: 1,
               }}
               >
-                {renderMangaPreview()}
+                {renderWebhookPreview()}
               </Sheet>
             )}
             <Button
-              disabled={!manga}
+              disabled={!webhook}
               startDecorator={<AddIcon/>}
-              loading={addMangaMutation.isPending}
-              onClick={() => addMangaMutation.mutate()}
+              loading={addWebhookMutation.isPending}
+              onClick={() => addWebhookMutation.mutate()}
             >
-              Add Manga
+              Add Webhook
             </Button>
           </Stack>
         </DialogContent>

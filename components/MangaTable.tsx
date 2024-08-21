@@ -46,7 +46,7 @@ const MangaTable: React.FC<MangaTableProps> = ({ mangaData }) => {
         <td>
           <Stack direction="row" alignItems="center" spacing={2}>
             <AspectRatio ratio="1/1.425" sx={{ minWidth: 45, borderRadius: theme => theme.radius.sm }}>
-              <Image fill src={manga.cover} alt={`Cover art of ${manga.title}`}/>
+              <Image fill sizes="45px" src={manga.cover} alt={`Cover art of ${manga.title}`}/>
             </AspectRatio>
             <Link
               level="title-sm"

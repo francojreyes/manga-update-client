@@ -1,5 +1,6 @@
 "use client";
 
+import WebhookList from "@/components/WebhookList";
 import WebhooksTable from "@/components/WebhooksTable";
 import useSelectedInstance from "@/hooks/useSelectedInstance";
 import AddIcon from "@mui/icons-material/Add";
@@ -8,7 +9,7 @@ import Button from "@mui/joy/Button";
 import IconButton from "@mui/joy/IconButton";
 import Input from "@mui/joy/Input";
 import Stack from "@mui/joy/Stack";
-import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { useQuery } from "@tanstack/react-query";
 import { useRouter } from "next/navigation";
 import React from "react";
 
@@ -25,29 +26,11 @@ const Layout = ({
     staleTime: 60 * 1000,
   });
 
-  const queryClient = useQueryClient();
-  const refB = React.useRef<HTMLInputElement>(null);
-  const add = useMutation({
-    mutationFn: () => {
-      const parts = (refB.current?.value ?? "//").split("/").filter(Boolean);
-      return fetch(
-        `/api/instance/${instance.id}/webhooks`,
-        {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({ id: parts[parts.length - 2], token: parts[parts.length - 1] }),
-        }
-      );
-    },
-    onSuccess: async () => {
-      await queryClient.invalidateQueries({
-        queryKey: ["instance", instance.id, "webhooks"]
-      });
-    },
-  });
-
+  const [searchInput, setSearchInput] = React.useState("");
+  const displayedData = data?.webhooks?.filter((webhook) =>
+    webhook.name.toLowerCase().includes(searchInput) ||
+    webhook.guild.name?.toLowerCase()?.includes(searchInput)
+  );
 
   return (
     <>
@@ -57,18 +40,19 @@ const Layout = ({
           pt={{ xs: 2, md: 0 }} px={{ xs: 1, md: 0 }}
         >
           <Input
+            name="Webhook search"
             sx={{ flexGrow: 1 }}
             placeholder="Search for webhook or server"
-            slotProps={{ input: { ref: refB } }}
             startDecorator={<SearchIcon/>}
+            value={searchInput}
+            onChange={(e) => setSearchInput(e.target.value.toLowerCase())}
           />
           <Button
             sx={(theme) => ({
               [theme.breakpoints.down("md")]: { display: "none" },
             })}
             startDecorator={<AddIcon/>}
-            onClick={() => add.mutate()}
-            // onClick={() => router.push(`/instance/${instance!.idx}/webhooks/new`)}
+            onClick={() => router.push(`/instance/${instance!.idx}/webhooks/new`)}
           >
             Add Webhook
           </Button>
@@ -81,11 +65,12 @@ const Layout = ({
             <AddIcon/>
           </IconButton>
         </Stack>
-        <WebhooksTable webhooks={data?.webhooks}/>
+        <WebhooksTable webhooks={displayedData}/>
+        <WebhookList webhooks={displayedData}/>
       </Stack>
       {children}
     </>
-  )
-}
+  );
+};
 
 export default Layout;

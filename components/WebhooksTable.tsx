@@ -13,8 +13,6 @@ import Typography from "@mui/joy/Typography";
 import { format } from "date-fns";
 import React from "react";
 
-const cdn = new CDN();
-
 interface WebhooksTableProps {
   webhooks: Webhook[] | undefined;
 }
@@ -46,8 +44,8 @@ const WebhooksTable: React.FC<WebhooksTableProps> = ({ webhooks }) => {
           <Stack direction="row" alignItems="center" spacing={2} width="100%" my={0.5}>
             <Avatar
               src={webhook.avatar
-                ? cdn.avatar(webhook.id, webhook.avatar)
-                : cdn.defaultAvatar(calculateUserDefaultAvatarIndex(webhook.id))
+                ? new CDN().avatar(webhook.id, webhook.avatar)
+                : new CDN().defaultAvatar(calculateUserDefaultAvatarIndex(webhook.id))
               }
             />
             <Typography
@@ -63,7 +61,7 @@ const WebhooksTable: React.FC<WebhooksTableProps> = ({ webhooks }) => {
         </td>
         <td>
           <Stack direction="row" alignItems="center" spacing={2} width="100%">
-            <Avatar src={webhook.guild.icon ? cdn.icon(webhook.guild.id, webhook.guild.icon) : undefined}>
+            <Avatar src={webhook.guild.icon ? new CDN().icon(webhook.guild.id, webhook.guild.icon) : undefined}>
               {getInitials(webhook.guild.name ?? "")}
             </Avatar>
             <Typography

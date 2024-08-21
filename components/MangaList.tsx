@@ -39,66 +39,64 @@ const MangaList: React.FC<MangaListProps> = ({ mangaData }) => {
     }
 
     if (!mangaData.length) {
-      return <Typography width="100%" py={2} textAlign="center">No manga found</Typography>;
+      return <Typography key="none" width="100%" py={2} textAlign="center">No manga found</Typography>;
     }
 
-    return mangaData.map((manga) => (
-      <>
-        <ListItem>
-          <ListItemContent sx={{ display: "flex", gap: 2, alignItems: "flex-start" }}>
-            <ListItemDecorator sx={{ minWidth: 45 }}>
-              <AspectRatio ratio="1/1.425" sx={{ minWidth: 45, borderRadius: theme => theme.radius.sm }}>
-                <Image fill src={manga.cover} alt={`Cover art of ${manga.title}`}/>
-              </AspectRatio>
-            </ListItemDecorator>
-            <Stack spacing={0.5}>
-              <Typography level="title-sm">
-                {manga.title}
-              </Typography>
-              <Stack direction="row" spacing={0.5} alignItems="center">
-                <StatusPill size="sm" status={manga.status}/>
-                <LatestUpdate chapter={manga.latestChapter} mangaId={manga.id}/>
-              </Stack>
+    return mangaData.flatMap((manga) => ([
+      <ListItem key={manga.id}>
+        <ListItemContent sx={{ display: "flex", gap: 2, alignItems: "flex-start" }}>
+          <ListItemDecorator sx={{ minWidth: 45 }}>
+            <AspectRatio ratio="1/1.425" sx={{ minWidth: 45, borderRadius: theme => theme.radius.sm }}>
+              <Image fill sizes="45px" src={manga.cover} alt={`Cover art of ${manga.title}`}/>
+            </AspectRatio>
+          </ListItemDecorator>
+          <Stack spacing={0.5}>
+            <Typography level="title-sm">
+              {manga.title}
+            </Typography>
+            <Stack direction="row" spacing={0.5} alignItems="center">
+              <StatusPill size="sm" status={manga.status}/>
+              <LatestUpdate chapter={manga.latestChapter} mangaId={manga.id}/>
             </Stack>
-          </ListItemContent>
-          <Dropdown>
-            <MenuButton
-              slots={{ root: IconButton }}
-              slotProps={{ root: { variant: "plain", color: "neutral", size: "sm" } }}
+          </Stack>
+        </ListItemContent>
+        <Dropdown>
+          <MenuButton
+            slots={{ root: IconButton }}
+            slotProps={{ root: { variant: "plain", color: "neutral", size: "sm" } }}
+          >
+            <MoreVert/>
+          </MenuButton>
+          <Menu size="sm" placement="bottom-end">
+            <MenuItem
+              component={Link} underline="none"
+              href={`https://mangadex.org/title/${manga.id}`}
+              target="_blank"
+              rel="noopener"
             >
-              <MoreVert/>
-            </MenuButton>
-            <Menu size="sm" placement="bottom-end">
-              <MenuItem
-                component={Link} underline="none"
-                href={`https://mangadex.org/title/${manga.id}`}
-                target="_blank"
-                rel="noopener"
-              >
-                <ListItemDecorator sx={{ color: "inherit" }}>
-                  <OpenInNewIcon/>
-                </ListItemDecorator>
-                MangaDex
-              </MenuItem>
-              <ListDivider/>
-              <MenuItem color="danger" onClick={() => setMangaToRemove(manga)}>
-                <ListItemDecorator sx={{ color: "inherit" }}>
-                  <RemoveCircleOutlineIcon/>
-                </ListItemDecorator>
-                Remove
-              </MenuItem>
-            </Menu>
-          </Dropdown>
-        </ListItem>
-        <ListDivider/>
-      </>
-    ));
+              <ListItemDecorator sx={{ color: "inherit" }}>
+                <OpenInNewIcon/>
+              </ListItemDecorator>
+              MangaDex
+            </MenuItem>
+            <ListDivider/>
+            <MenuItem color="danger" onClick={() => setMangaToRemove(manga)}>
+              <ListItemDecorator sx={{ color: "inherit" }}>
+                <RemoveCircleOutlineIcon/>
+              </ListItemDecorator>
+              Remove
+            </MenuItem>
+          </Menu>
+        </Dropdown>
+      </ListItem>,
+      <ListDivider key={"divider-" + manga.id}/>
+    ]));
   };
 
   return (
     <>
       <List size="sm" sx={{ display: { md: "none" }, overflow: !mangaData ? "hidden" : "auto" }}>
-        <ListDivider/>
+        <ListDivider key="divider-0"/>
         {renderItems()}
       </List>
       <RemoveMangaModal

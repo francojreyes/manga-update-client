@@ -24,7 +24,7 @@ const getSelfGuilds = async (api: API) => {
 
 const getGuild = async (api: API, guildId: string) => {
   try {
-    return api.guilds.getWidget(guildId);
+    return await api.guilds.getWidget(guildId);
   } catch (e) {
     return null;
   }
@@ -38,7 +38,7 @@ const getWebhook = async (api: API, webhookId: string, webhookToken: string) => 
   const cached = webhookCache.get<APIWebhook>(cacheKey);
   if (cached) return cached;
 
-  const webhook = api.webhooks.get(webhookId, { token: webhookToken });
+  const webhook = await api.webhooks.get(webhookId, { token: webhookToken });
   webhookCache.set(cacheKey, webhook);
   return webhook;
 };

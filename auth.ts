@@ -24,10 +24,9 @@ declare module "@auth/core/jwt" {
 export const { handlers, signIn, signOut, auth } = NextAuth({
   providers: [Discord({
     async profile({ id, email, username, discriminator, global_name, avatar }: DiscordProfile) {
-      const cdn = new CDN();
       const image = avatar
-        ? cdn.avatar(id, avatar)
-        : cdn.defaultAvatar(calculateUserDefaultAvatarIndex(discriminator));
+        ? new CDN().avatar(id, avatar)
+        : new CDN().defaultAvatar(calculateUserDefaultAvatarIndex(discriminator));
 
       return { discordId: id, email, name: global_name, username, image };
     },
