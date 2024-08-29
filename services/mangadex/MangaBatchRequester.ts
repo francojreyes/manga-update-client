@@ -32,8 +32,6 @@ class MangaBatchRequester {
     const batch = this.queue.slice(0, this.maxBatchSize);
     this.queue = this.queue.slice(this.maxBatchSize);
 
-    console.debug("Requesting: " + batch.map(item => item.mangaId).join(", "));
-
     const params = new URLSearchParams();
     params.append("includes[]", "cover_art");
     for (const contentRating of CONTENT_RATINGS) {
