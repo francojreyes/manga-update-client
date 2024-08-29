@@ -25,7 +25,7 @@ class MangaBatchRequester {
       if (this.queue.length >= this.maxBatchSize) {
         this.debouncedExecuteBatch.flush();
       }
-    })
+    });
   }
 
   private async executeBatch() {
@@ -46,7 +46,7 @@ class MangaBatchRequester {
     }
 
     try {
-      const res = await throttledFetch(`${BASE_URL}/manga?${params}`)
+      const res = await throttledFetch(`${BASE_URL}/manga?${params}`);
       const json = await res.json();
 
       const data = Object.fromEntries(json.data.map((jsonManga: any) => [
