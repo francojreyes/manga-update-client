@@ -1,7 +1,10 @@
 import { auth } from "@/auth";
 import db from "@/services/db";
 import mangadex from "@/services/mangadex";
+import { unstable_cache } from "next/cache";
 import { NextResponse } from "next/server";
+
+const fetchManga = unstable_cache(mangadex.getManga, [], { revalidate: 3600 });
 
 export const GET = auth(async (req, { params }) => {
   const authUser = req.auth?.user;
@@ -25,16 +28,14 @@ export const GET = auth(async (req, { params }) => {
     );
   }
 
-  const latestChaptersById = Object.fromEntries(
-    instance.manga.map((manga) => [manga.id, manga.latestChapters[0]])
-  );
-  const mangaById = await mangadex.getManyManga(instance.manga.map((manga) => manga.id));
+  const mangaPromises: Promise<Manga | null>[] = instance.manga
+    .map(async (manga) => {
+      const fetchedManga = await fetchManga(manga.id);
+      if (!fetchedManga) return null;
 
-  const manga: Manga[] = instance.manga
-    .map((manga) => {
-      const latestChapter = latestChaptersById[manga.id];
+      const latestChapter = manga.latestChapters[0];
       return {
-        ...mangaById[manga.id],
+        ...fetchedManga,
         latestChapter: latestChapter
           ? {
             chapterId: latestChapter.chapterId,
@@ -46,6 +47,9 @@ export const GET = auth(async (req, { params }) => {
           : undefined
       };
     })
+
+  const manga: Manga[] = (await Promise.all(mangaPromises))
+    .filter((maybeManga) => maybeManga !== null)
     .sort((a, b) => a.title.localeCompare(b.title));
 
   return NextResponse.json({ manga });

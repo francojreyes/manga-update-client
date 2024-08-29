@@ -20,9 +20,9 @@
     "@tanstack/react-query": "^5.51.23",
     "add": "^2.0.6",
     "date-fns": "^3.6.0",
+    "lodash.debounce": "^4.0.8",
     "next": "14.2.5",
     "next-auth": "^5.0.0-beta.20",
-    "node-cache": "^5.1.2",
     "node-loader": "^2.0.0",
     "p-throttle": "^6.2.0",
     "react": "^18",
@@ -31,7 +31,8 @@
     "zlib-sync": "^0.1.9"
   },
   "devDependencies": {
-    "@types/node": "^20",
+    "@types/lodash.debounce": "^4.0.9",
+    "@types/node": "^22",
     "@types/react": "^18",
     "@types/react-dom": "^18",
     "eslint": "^8",

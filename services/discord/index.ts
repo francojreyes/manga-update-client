@@ -1,6 +1,5 @@
 import { API } from "@discordjs/core";
 import { REST } from "@discordjs/rest";
-import NodeCache from "node-cache";
 
 const createUserAPI = (access_token: string) => {
   const rest = new REST({
@@ -30,17 +29,8 @@ const getGuild = async (api: API, guildId: string) => {
   }
 };
 
-type APIWebhook = Awaited<ReturnType<typeof API.prototype.webhooks.get>>;
-const webhookCache = new NodeCache({ stdTTL: 300 });
-
 const getWebhook = async (api: API, webhookId: string, webhookToken: string) => {
-  const cacheKey = webhookId + "/" + webhookToken;
-  const cached = webhookCache.get<APIWebhook>(cacheKey);
-  if (cached) return cached;
-
-  const webhook = await api.webhooks.get(webhookId, { token: webhookToken });
-  webhookCache.set(cacheKey, webhook);
-  return webhook;
+  return api.webhooks.get(webhookId, { token: webhookToken });
 };
 
 const service = {

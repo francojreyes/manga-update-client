@@ -17,7 +17,12 @@ const Layout = async ({
   }
 
   // Run when the user first loads the "root" layout
-  await cacheUserGuilds();
+  try {
+    await cacheUserGuilds();
+  } catch (e) {
+    await signIn();
+    return;
+  }
 
   const instances = await db.getUserInstances(
     session.user.discordId,
