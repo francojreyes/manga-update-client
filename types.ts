@@ -3,6 +3,7 @@ interface Instance {
   idx: number;
   name: string;
   imgSrc?: string;
+  ownerId: string;
 }
 
 type MangaStatus = "ongoing" | "completed" | "hiatus" | "cancelled";

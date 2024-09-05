@@ -36,6 +36,7 @@ const getUserInstances = async (userId: string, userName?: string): Promise<Inst
     idx: idx,
     name: instance.name,
     imgSrc: instance.imgSrc ?? undefined,
+    ownerId: instance.ownerId,
   }));
 };
 
@@ -193,6 +194,36 @@ const getGuild = async (guildId: string) => {
   });
 }
 
+const addInstanceMember = async (instanceId: number, userId: string) => {
+  await prisma.instance.update({
+    where: {
+      id: instanceId,
+    },
+    data: {
+      members: {
+        connect: {
+          id: userId,
+        }
+      }
+    }
+  });
+};
+
+const removeInstanceMember = async (instanceId: number, userId: string) => {
+  await prisma.instance.update({
+    where: {
+      id: instanceId,
+    },
+    data: {
+      manga: {
+        disconnect: {
+          id: userId,
+        }
+      }
+    }
+  });
+};
+
 const service = {
   getUserInstances,
   getInstance,
@@ -204,6 +235,8 @@ const service = {
   addInstanceWebhook,
   removeInstanceWebhook,
   getGuild,
+  addInstanceMember,
+  removeInstanceMember,
 };
 
 export default service;

@@ -40,3 +40,37 @@ export const GET = auth(async (req, { params }) => {
 
   return NextResponse.json({ members: await Promise.all(memberPromises) });
 });
+
+export const DELETE = auth(async (req, { params }) => {
+  const authUser = req.auth?.user;
+  if (!authUser) {
+    return NextResponse.json({ message: "Not authenticated" }, { status: 401 });
+  }
+
+  const instanceId = parseInt(params?.instanceId as string);
+  const instance = await db.getInstance(+instanceId);
+  if (!instance) {
+    return NextResponse.json(
+      { message: `No instance with id ${params?.instanceId}` },
+      { status: 404 },
+    );
+  }
+
+  if (instance.ownerId !== authUser.discordId) {
+    return NextResponse.json(
+      { message: "You do not own this instance" },
+      { status: 403 },
+    );
+  }
+
+  const { id } = await req.json();
+  if (typeof id !== "string") {
+    return NextResponse.json(
+      { message: "Invalid id provided" },
+      { status: 400 },
+    );
+  }
+
+  await db.removeInstanceMember(instanceId, id);
+  return NextResponse.json({});
+});
