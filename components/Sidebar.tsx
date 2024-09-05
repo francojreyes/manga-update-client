@@ -68,7 +68,6 @@ const Sidebar: React.FC<SidebarProps> = ({ navOpen, setNavOpen }) => {
 
   const session = useSession();
   const userData = session.data?.user;
-  console.log({ userData });
 
   return <>
     <Sheet
