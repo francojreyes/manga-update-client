@@ -37,3 +37,12 @@ interface Webhook {
   guild: Guild;
   channelId: string;
 }
+
+interface Member {
+  id: string;
+  username: string;
+  global_name: string;
+  avatar: string | null;
+  discriminator: string;
+  is_owner: boolean;
+}
