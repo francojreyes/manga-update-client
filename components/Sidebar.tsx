@@ -1,4 +1,5 @@
 import { useInstancesContext } from "@/app/instance/InstancesProvider";
+import DiscordUser from "@/components/DiscordUser";
 import ModeToggle from "@/components/ModeToggle";
 import { headerHeight } from "@/components/PageHeader";
 import useSelectedInstance from "@/hooks/useSelectedInstance";
@@ -10,7 +11,6 @@ import PeopleAltIcon from "@mui/icons-material/PeopleAlt";
 import SettingsIcon from "@mui/icons-material/Settings";
 import WebhookIcon from "@mui/icons-material/Webhook";
 import AspectRatio from "@mui/joy/AspectRatio";
-import Avatar from "@mui/joy/Avatar";
 import Card from "@mui/joy/Card";
 import Divider from "@mui/joy/Divider";
 import IconButton from "@mui/joy/IconButton";
@@ -19,7 +19,6 @@ import ListItem from "@mui/joy/ListItem";
 import ListItemButton, { listItemButtonClasses } from "@mui/joy/ListItemButton";
 import ListItemContent from "@mui/joy/ListItemContent";
 import Sheet from "@mui/joy/Sheet";
-import Skeleton from "@mui/joy/Skeleton";
 import Stack from "@mui/joy/Stack";
 import Tooltip from "@mui/joy/Tooltip";
 import Typography from "@mui/joy/Typography";
@@ -66,6 +65,10 @@ const Sidebar: React.FC<SidebarProps> = ({ navOpen, setNavOpen }) => {
   const pathname = usePathname();
   const pathSegments = pathname.split("/");
   const currentPage = pathSegments.slice(3).join("/");
+
+  const session = useSession();
+  const userData = session.data?.user;
+  console.log({ userData });
 
   return <>
     <Sheet
@@ -136,7 +139,21 @@ const Sidebar: React.FC<SidebarProps> = ({ navOpen, setNavOpen }) => {
         </Stack>
       </Stack>
       <Divider/>
-      <UserProfile/>
+      <Stack height={70} width={navWidth} p={2} direction="row" justifyContent="space-between" alignItems="center">
+        <DiscordUser
+          name={userData?.name}
+          image={userData?.image}
+          username={userData?.username}
+        />
+        <Stack direction="row" spacing={1} alignItems="center">
+          <ModeToggle/>
+          <Tooltip title="Sign out" arrow placement="top" sx={{ fontWeight: 500 }}>
+            <IconButton variant="outlined" color="danger" onClick={() => signOut()}>
+              <LogoutIcon/>
+            </IconButton>
+          </Tooltip>
+        </Stack>
+      </Stack>
     </Sheet>
     <Divider orientation="vertical"/>
   </>;
@@ -223,41 +240,6 @@ const PageNavItem: React.FC<PageNavItemProps> = ({ Icon, title, href, selected, 
         </ListItemContent>
       </ListItemButton>
     </ListItem>
-  );
-};
-
-const UserProfile = () => {
-  const session = useSession();
-  const userData = session.data?.user;
-
-  return (
-    <Stack height={70} width={navWidth} p={2} direction="row" justifyContent="space-between" alignItems="center">
-      <Stack direction="row" alignItems="center" spacing={1} width={180} overflow="hidden">
-        <Avatar src={userData?.image ?? ""}>
-          <Skeleton loading={!userData?.image}/>
-        </Avatar>
-        <Stack direction="column" spacing={userData ? -0.5 : 0}>
-          <Typography fontWeight="bold" level="title-sm">
-            <Skeleton loading={!userData?.name} animation="wave">
-              {userData?.name ?? "dummy name"}
-            </Skeleton>
-          </Typography>
-          <Typography level="body-xs">
-            <Skeleton loading={!userData?.username} animation="wave">
-              {userData?.username ?? "placeholder username"}
-            </Skeleton>
-          </Typography>
-        </Stack>
-      </Stack>
-      <Stack direction="row" spacing={1} alignItems="center">
-        <ModeToggle/>
-        <Tooltip title="Sign out" arrow placement="top" sx={{ fontWeight: 500 }}>
-          <IconButton variant="outlined" color="danger" onClick={() => signOut()}>
-            <LogoutIcon/>
-          </IconButton>
-        </Tooltip>
-      </Stack>
-    </Stack>
   );
 };
 
